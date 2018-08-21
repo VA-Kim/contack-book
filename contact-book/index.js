@@ -33,34 +33,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(methodOverride("_method"));
 
-//Routes
-app.get("/contact/:id", function(req,res){
-  Contact.findOne({_id:req.params.id}, function(err, contact){
-    if(err) return res.json(err);
-    res.render("contact/show", {contact:contact});
-  });
-});
 
-app.get("/contacts/:id/edit", function(req,res){
-  Contact.findOne({_id:req.params.id}, function(err, contact){
-    if(err) return res.json(err);
-    res.redirect("/contacts/"+req.params.id);
-  });
-});
-
-app.put("/contacts/:id", function(req, res){
-  Contact.findOneAndUpdate({_id:req.params.id}, req.body, function(err, contact){
-    if(err) return res.json(err);
-    res.redirect("/contacts/"+req.params.id);
-  });
-});
-
-app.delete("/contacts/:id", function(req, res){
-  Contact.remove({_id:req.params.id}, function(err, contact){
-    if(err) return res.json(err);
-    res.redirect("/contacts");
-  });
-});
 
 // Port setting
 app.listen(3000, function(){
