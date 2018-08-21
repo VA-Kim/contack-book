@@ -1,7 +1,7 @@
 var express = require("express");
 var mongoose = require("mongoose");
 var bodyParse = require("body-parser");
-var config = require('./config');
+var methodOverride = require("method-override");
 var app = express();
 
 // DataBase
@@ -18,12 +18,10 @@ const options = {
 mongoose.connect(process.env.MONGO_DB, options );
 var db = mongoose.connection; // 2
 
-// 4
 db.on("error", function(err){
  console.log("DB ERROR : ", err);
 });
 
-// 3﻿
 db.once("open", function(){
  console.log("DB connected");
 });
@@ -31,6 +29,38 @@ db.once("open", function(){
 // Other settings
 app.set("view engine", "ejs");
 app.use(express.static(__dirname+"/public"));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended:true}));
+app.use(methodOverride("_method"));
+
+//Routes
+app.get("/contact/:id", function(req,res){
+  Contact.findOne({_id:req.params.id}, function(err, contact){
+    if(err) return res.json(err);
+    res.render("contact/show", {contact:contact});
+  });
+});
+
+app.get("/contacts/:id/edit", function(req,res){
+  Contact.findOne({_id:req.params.id}, function(err, contact){
+    if(err) return res.json(err);
+    res.redirect("/contacts/"+req.params.id);
+  });
+});
+
+app.put("/contacts/:id", function(req, res){
+  Contact.findOneAndUpdate({_id:req.params.id}, req.body, function(err, contact){
+    if(err) return res.json(err);
+    res.redirect("/contacts/"+req.params.id);
+  });
+});
+
+app.delete("/contacts/:id", function(req, res){
+  Contact.remove({_id:req.params.id}, function(err, contact){
+    if(err) return res.json(err);
+    res.redirect("/contacts");
+  });
+});
 
 // Port setting
 app.listen(3000, function(){
