@@ -1,6 +1,6 @@
 var express = require("express");
 var mongoose = require("mongoose");
-var bodyParse = require("body-parser");
+var bodyParser = require("body-parser");
 var methodOverride = require("method-override");
 var app = express();
 
@@ -16,6 +16,7 @@ const options = {
 }
 
 mongoose.connect(process.env.MONGO_DB, options );
+// mongoose.connect('mongodb://ickim:167357aa@ds127342.mlab.com:27342/todo', options );
 var db = mongoose.connection; // 2
 
 db.on("error", function(err){
@@ -33,9 +34,12 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(methodOverride("_method"));
 
-
+// Routes
+app.use("/", require("./routes/home")); //1
+app.use("/contacts", require("./routes/contact")); //2
 
 // Port setting
-app.listen(3000, function(){
- console.log("server on!");
+var port = 3000;
+app.listen(port, function(){
+  console.log("server on! http://localhost:"+port);
 });
